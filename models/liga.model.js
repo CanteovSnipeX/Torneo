@@ -6,8 +6,8 @@ var Schema = mongoose.Schema;
 var ligaSchema = Schema({
    name:String,
    Directors:String,
-   imagen:String,
-   gruop: [{type: Schema.ObjectId, ref: 'gruop'}] 
+   image:String,
+   grupo: [{type: Schema.ObjectId, ref: 'grupo'}] 
 });
 
 module.exports = mongoose.model('liga', ligaSchema);

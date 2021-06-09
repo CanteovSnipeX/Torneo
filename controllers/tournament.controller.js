@@ -13,7 +13,6 @@ function createTorneo(req, res) {
     var torneo = new Torneo();
     var params = req.body;
 
-
     if(params.name && params.typetournamen && params.awards ){
         Torneo.findOne({name: params.name},(err,torneoFind)=>{
             if(err){
@@ -40,7 +39,7 @@ function createTorneo(req, res) {
                                     }else{
                                         return res.status(500).send({message: 'Error al crearun torneo'})
                                     }
-                                }).populate('liga')
+                                }).populate('torneo')
                             }else{
                                 return res.status(404).send({message: 'No se creo el torneo'})
                             }

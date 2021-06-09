@@ -1,13 +1,13 @@
 
-'use strick'
+'use strict'
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var groupSchema = Schema({
    name:String,
-   imagen:String,
+   image:String,
    equipo: [{type: Schema.ObjectId, ref: 'team'}] 
 });
 
-module.exports = mongoose.model('group', groupSchema);
+module.exports = mongoose.model('grupo', groupSchema);

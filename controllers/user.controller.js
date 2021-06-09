@@ -3,6 +3,7 @@
 var User = require('../models/user.model');
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('../services/jwt');
+var Torneo =  require('../models/Tournament.model');
 
 
 function pruebaUser(req, res){
@@ -189,8 +190,7 @@ function removeUser(req, res){
 }
 
 function getUsers(req, res){
-
-    User.find({}).populate('torneo').exec((err, users)=>{
+    User.find({}).populate('torneo').exec((err, users) => {
             if(err){
                     return res.status(500).send({message: 'Error general en el servidor'})
             }else if(users){
@@ -199,6 +199,7 @@ function getUsers(req, res){
                     return res.status(404).send({message: 'No hay registros'})
             }
         })
+
 }
 
 function search(req, res){

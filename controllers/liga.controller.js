@@ -78,11 +78,11 @@ function updateLiga(req, res) {
                                 }
                             })
                         }else{
-                            return res.status(404).send({message: 'Usuario no encontrado'})
+                            return res.status(404).send({message: 'Torneo no Existente'})
                         }
                     })
                 }else{
-                    return res.status(404).send({message: 'Contacto a actualizar inexistente'});
+                    return res.status(404).send({message: 'Liga a actualizar inexistente'});
                 }
             })
         }else{
@@ -90,11 +90,11 @@ function updateLiga(req, res) {
      }
 }
 
-function removeLiga(req, res){
-    let userId = req.params.idU;
+function removeLiga(req, res) {
+    let torneoId = req.params.idT;
     let ligaId = req.params.idL;
-
-        User.findOneAndUpdate({_id: userId, liga: ligaId},
+    
+        Torneo.findOneAndUpdate({_id: torneoId, liga: ligaId},
             {$pull:{liga: ligaId}}, {new:true}, (err, contactPull)=>{
                 if(err){
                     return res.status(500).send({message: 'Error general'});
@@ -103,31 +103,33 @@ function removeLiga(req, res){
                         if(err){
                             return res.status(500).send({message: 'Error general al eliminar contacto'});
                         }else if(contactRemoved){
-                            return res.send({message: 'Contacto eliminado', contactPull});
+                            return res.send({message: 'Liga eliminado'});
                         }else{
-                            return res.status(500).send({message: 'Contacto no encontrado, o ya eliminado'});
+                            return res.status(500).send({message: 'Liga no encontrado, o ya eliminado'});
                         }
                     })
                 }else{
-                    return res.status(500).send({message: 'No se pudo eliminar el contacto del usuario'});
-                }
-    }).populate('liga')
+                    return res.status(500).send({message: 'No se pudo eliminarla liga del torneo'});
+          }
+    })
 }
 
 function getLIga(req, res) {
-    Liga.find({}).populate('equipo').exec((err, ligas)=>{
+    Liga.find({}).populate('grupo').exec((err, ligas)=>{
         if(err){
                 return res.status(500).send({message: 'Error general en el servidor'})
         }else if(ligas){
-                return res.send({message: 'Ligas: ', ligas})
+                return res.send({message: 'Ligas en Existencias:',ligas})
         }else{
-                return res.status(404).send({message: 'No hay registros'})
+            return res.status(403).send({message: 'No hay registros'})
         }
     })
 }
 
-
 module.exports = {
     pruebaLiga,
-    createLiga
+    createLiga,
+    updateLiga,
+    removeLiga,
+    getLIga
 }
