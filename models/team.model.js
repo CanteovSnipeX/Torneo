@@ -6,8 +6,8 @@ var Schema = mongoose.Schema;
 
 var teamSchema = Schema({
     name: String,
-    nuIntegrantes: Number,
-    image:String,
+    nuIntegrantes: String,
+    image: String,
 });
 
-module.exports = mongoose.model('team', teamSchema);
+module.exports = mongoose.model('equipo', teamSchema);
