@@ -1,4 +1,4 @@
-'use stirck'
+'use stirct'
 
 var express = require('express');
 var userController = require('../controllers/user.controller');

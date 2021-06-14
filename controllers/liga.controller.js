@@ -126,6 +126,7 @@ function getLIga(req, res) {
     })
 }
 
+
 module.exports = {
     pruebaLiga,
     createLiga,
