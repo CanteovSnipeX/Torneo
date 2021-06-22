@@ -3,7 +3,9 @@
 var User = require('../models/user.model');
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('../services/jwt');
-var Torneo =  require('../models/Tournament.model');
+var fs = require('fs');
+var path = require('path');
+
 
 
 function pruebaUser(req, res){
@@ -40,6 +42,37 @@ function login(req, res){
         return res.status(401).send({message: 'Por favor ingresa los datos obligatorios'});
     }
 }
+
+
+function uploadImage(req , res) {
+    var userId = req.params.id;
+    var update =  req.bodyl;
+    var fileName ;
+
+        if(userId != req.user.sub){
+            res.status(403).send({message:"No tienes permisa"})
+        }else{
+            if(req.files){
+                var filePath = req.files.image.path;
+                var fileSplit = filePath.split('\\');
+                var fileName = fileSplit[2];
+
+                var extension = fileName.split('\.');
+                var fileExt = extensionp[1];
+                
+
+            }
+            
+        }
+}
+        
+
+
+
+
+
+
+
 
 function saveUser(req, res){
     var user = new User();
