@@ -43,36 +43,63 @@ function login(req, res){
     }
 }
 
-
-function uploadImage(req , res) {
+function uploadImage(req, res){
     var userId = req.params.id;
-    var update =  req.bodyl;
-    var fileName ;
+    var update = req.body;
+    var fileName;
 
-        if(userId != req.user.sub){
-            res.status(403).send({message:"No tienes permisa"})
-        }else{
-            if(req.files){
-                var filePath = req.files.image.path;
-                var fileSplit = filePath.split('\\');
-                var fileName = fileSplit[2];
+    if(userId != req.user.sub){
+        res.status(403).send({message: 'No tienes permisos'});
+    }else{
+        if(req.files){
 
-                var extension = fileName.split('\.');
-                var fileExt = extensionp[1];
-                
-
-            }
-            
-        }
-}
         
+            var filePath = req.files.image.path;
+            var fileSplit = filePath.split('\\');
+            var fileName = fileSplit[2];
 
+            var extension = fileName.split('\.');
+            var fileExt = extension[1];
+            if( fileExt == 'png' ||
+                fileExt == 'jpg' ||
+                fileExt == 'jpeg' ||
+                fileExt == 'gif'){
+                    User.findByIdAndUpdate(userId, {image: fileName}, {new:true}, (err, userUpdated)=>{
+                        if(err){
+                            res.status(500).send({message: 'Error general'});
+                        }else if(userUpdated){
+                            res.send({user: userUpdated, userImage:userUpdated.image});
+                        }else{
+                            res.status(400).send({message: 'No se ha podido actualizar'});
+                        }
+                    })
+                }else{
+                    fs.unlink(filePath, (err)=>{
+                        if(err){
+                            res.status(500).send({message: 'Extensión no válida y error al eliminar archivo'});
+                        }else{
+                            res.send({message: 'Extensión no válida'})
+                        }
+                    })
+                }
+        }else{
+            res.status(400).send({message: 'No has enviado imagen a subir'})
+        }
+    }
+}
 
+function getImage(req, res){
+    var fileName = req.params.fileName;
+    var pathFile = './uploads/users/' + fileName;
 
-
-
-
-
+    fs.exists(pathFile, (exists)=>{
+        if(exists){
+            res.sendFile(path.resolve(pathFile));
+        }else{
+            res.status(404).send({message: 'Imagen inexistente'});
+        }
+    })
+}
 
 function saveUser(req, res){
     var user = new User();
@@ -258,6 +285,8 @@ function search(req, res){
 module.exports = {
     pruebaUser,
     login,
+    uploadImage,
+    getImage,
     saveUser,
     saveUserByAdmin,
     updateUser,

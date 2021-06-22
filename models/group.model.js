@@ -6,8 +6,8 @@ var Schema = mongoose.Schema;
 
 var groupSchema = Schema({
    name:String,
+   nintegrantes:String,
    image:String,
-   equipo:[{type: Schema.ObjectId, ref: 'equipo'}],
 });
 
 module.exports = mongoose.model('grupo', groupSchema);

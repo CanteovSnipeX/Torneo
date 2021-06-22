@@ -2,13 +2,79 @@
 
 var Group = require('../models/group.model');
 var Liga = require('../models/liga.model');
-var bcrypt = require('bcrypt-nodejs');
-var User = require('../models/user.model');
-const { find } = require('../models/group.model');
+var fs = require('fs');
+var path = require('path');
+
 
 
 function pruebaGroup(req, res) {
     return res.send({message:'Funcionando desde el controlador de group'});
+}
+
+
+function uploadImage(req, res){
+    var grupoId = req.params.idG;
+    let ligaId = req.params.idL;
+    var update = req.body;
+    var fileName;
+
+   
+        if(req.files){
+
+            var filePath = req.files.image.path;
+            var fileSplit = filePath.split('\\');
+            var fileName = fileSplit[2];
+
+            var extension = fileName.split('\.');
+            var fileExt = extension[1];
+            if( fileExt == 'png' ||
+                fileExt == 'jpg' ||
+                fileExt == 'jpeg' ||
+                fileExt == 'gif'){
+
+                    Liga.findOne({_id: ligaId, grupo: grupoId}, (err, ligaFind) => {
+                        if(err){
+                            return res.status(500).send({message: 'Error general en la actualización'});
+                        }else if(ligaFind){
+                            Group.findByIdAndUpdate(grupoId, {image:fileName},{new:true}, (err, grupoUpdate) => {
+                                if(err){
+                                    return res.status(500).send({message: 'Error general en la actualización'});
+                                }else if(grupoUpdate){
+                                    return res.send({message: 'Grupo actualizado', grupoUpdate});
+                                }else{
+                                    return res.status(404).send({message: 'Contacto no actualizado'});
+                                }
+                            }) 
+                        }else{
+                            return res.status(404).send({message: 'Liga no Existente'})
+                        }
+                    })
+                }else{
+                    fs.unlink(filePath, (err)=>{
+                        if(err){
+                            res.status(500).send({message: 'Extensión no válida y error al eliminar archivo'});
+                        }else{
+                            res.send({message: 'Extensión no válida'})
+                        }
+                    })
+                }
+        }else{
+            res.status(400).send({message: 'No has enviado imagen a subir'})
+        }
+}
+
+
+function getImage(req, res){
+    var fileName = req.params.fileName;
+    var pathFile = './uploads/equipos/' + fileName;
+
+    fs.exists(pathFile, (exists)=>{
+        if(exists){
+            res.sendFile(path.resolve(pathFile));
+        }else{
+            res.status(404).send({message: 'Imagen inexistente'});
+        }
+    })
 }
 
 function creategrupo(req, res) {
@@ -26,6 +92,7 @@ function creategrupo(req, res) {
                         return res.status(500).send({message: 'Error general'})
                     }else if(ligaFind){
                         grupo.name = params.name;
+                        grupo.nintegrantes = params.nintegrantes;
                         grupo.save((err, grupoSaved)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general al guardar'})
@@ -133,11 +200,11 @@ function removeGrupo(req, res) {
 }
 
 function getGroup(req, res) {
-    Group.find({}).populate('equipo').exec((err, groups) => {
+    Group.find({}).populate('').exec((err, groups) => {
         if(err){
                 return res.status(500).send({message: 'Error general en el servidor'})
         }else if(groups){
-                return res.send({message: 'Grupos: ', groups})
+                return res.send({message: 'Equipos: ', groups})
         }else{
                 return res.status(404).send({message: 'No hay registros'})
         }
@@ -147,6 +214,8 @@ function getGroup(req, res) {
 
 module.exports = {
     pruebaGroup,
+    uploadImage,
+    getImage,
     creategrupo,
     updateGrupo,
     removeGrupo,

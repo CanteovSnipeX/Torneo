@@ -6,7 +6,7 @@ var tournamentRouter = require('./routers/tournament.route');
 var userRouter = require('./routers/user.route');
 var ligaRouter = require('./routers/liga.route');
 var groupRouter = require('./routers/group.route');
-var teamRouter = require('./routers/team.route');
+
 
 var app = express();
 
@@ -17,7 +17,7 @@ app.use('/v1', userRouter);
 app.use('/v1', tournamentRouter);
 app.use('/v1', ligaRouter);
 app.use('/v1', groupRouter);
-app.use('/v1', teamRouter);
+
 
 
 module.exports = app;
