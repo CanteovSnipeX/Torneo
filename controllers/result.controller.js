@@ -49,6 +49,7 @@ function getResult(req , res) {
     })
 }
 
+
 module.exports = {
     crearResult,
     getResult
