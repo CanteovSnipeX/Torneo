@@ -7,11 +7,13 @@ var userRouter = require('./routers/user.route');
 var ligaRouter = require('./routers/liga.route');
 var groupRouter = require('./routers/group.route');
 var resultRouter = require('./routers/result.route');
+var cors = require('cors');
 
 var app = express();
 
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
+app.use(cors());
 
 app.use('/v1', userRouter);
 app.use('/v1', tournamentRouter);
