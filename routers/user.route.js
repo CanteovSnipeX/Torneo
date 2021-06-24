@@ -8,7 +8,7 @@ var upload = connectMultiparty({ uploadDir: './uploads/users'})
 
 var api = express.Router();
 
-api.get('/pruebaUser',userController.pruebaUser);
+//api.get('/pruebaUser',userController.pruebaUser);
 api.post('/login',userController.login);
 api.post('/saveUser', userController.saveUser);
 api.post('/saveUserByAdmin',[mdAuth.ensureAuth, mdAuth.ensureAuthAdmin],userController.saveUserByAdmin);
