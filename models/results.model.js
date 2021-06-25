@@ -8,8 +8,7 @@ var resultsSchema = Schema({
    jornada:String,
    Equipo1:String,
    Equipo2:String,
-   resultEquipo:Number,
-   resultEquipo1:Number 
+   gool: [{type: Schema.ObjectId, ref: 'gool'}]
 });
 
 module.exports = mongoose.model('results', resultsSchema);

@@ -1,6 +1,6 @@
 'use strict'
 
-var User = require('../models/user.model');
+var Goles = require('../models/goles.model')
 var Result  = require('../models/results.model');
 
 
@@ -8,7 +8,7 @@ function crearResult (req ,res) {
     var result = new Result();
     var params = req.body;
      
-    if(params.jornada && params.Equipo1 && params.Equipo2 && params.resultEquipo && params.resultEquipo1 ){
+    if(params.jornada && params.Equipo1 && params.Equipo2){
         Result.findOne({}, (err, userFind)=>{
             if(err){
                 return res.status(500).send({message: 'Error general en el servidor'});
@@ -18,8 +18,6 @@ function crearResult (req ,res) {
             result.jornada = params.jornada;
             result.Equipo1 = params.Equipo1;
             result.Equipo2 = params.Equipo2;
-            result.resultEquipo = params.resultEquipo;
-            result.resultEquipo1 = params.resultEquipo1;
             result.save((err , resultSaved)=>{
                 if(err){
                     return res.status(500).send({message:'Error'});
@@ -47,6 +45,47 @@ function getResult(req , res) {
                 return res.status(404).send({message: 'No hay registros'})
         }
     })
+}
+
+
+function addPuntos(req, res) {
+    var resultId = req.params.id;
+    var goles = new Goles ();
+    var params = req.body;
+
+    if(params.resultEquipo &&  params.resultEquipo1){
+        Goles.findOne({},(err)=>{
+            if(err){
+                return res.status(500).send({message:'Error'});
+            }else{
+                Result.findById(resultId,(err, golesFind)=>{
+                    if(err){
+                        return res.status(500).send({message: 'Error general'});
+                    }else if(golesFind){
+                        goles.resultEquipo = params.resultEquipo;
+                        goles.resultEquipo1 = params.resultEquipo1;
+                        goles.save((err,saved)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general al guardar'});
+                            }else if(saved){
+                                Result.findByIdAndUpdate
+                            }else{
+
+                            }
+                        })
+                    }else{
+
+                    }
+                })
+
+            }
+        })
+
+    }else{
+
+    }
+
+    
 }
 
 
