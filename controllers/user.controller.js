@@ -203,7 +203,7 @@ function updateUser(req, res) {
                             if(err){
                                 return res.status(500).send({message: "Error General al actualizar"});
                             }else if(userUpdate){
-                                return res.send({message: "Usuario Actualizado",userUpdate});
+                                return res.send({message: "Usuario Actualizado", userUpdate });
                             }else{
                                 return res.status(404).send({message: "No se pudo actualizar"});
                             }
