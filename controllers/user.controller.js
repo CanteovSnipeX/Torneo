@@ -144,9 +144,13 @@ function saveUser(req, res){
 }
 
 function saveUserByAdmin(req, res) {
+    var userId = req.params.id;
     var user = new User();
     var params = req.body;
 
+    if(userId != req.user.sub){
+        res.status(401).send({message: 'No tienes permiso para crear usuarios en esta ruta'})
+    }else{
         if(params.name && params.username && params.email && params.password && params.role){
             User.findOne({username: params.username}, (err, userFind)=>{
                 if(err){
@@ -183,8 +187,8 @@ function saveUserByAdmin(req, res) {
         }else{
             return res.send({message: 'Por favor ingresa los datos obligatorios'});
         }
+    }
 }
-
 function updateUser(req, res) {
     let userId = req.params.id;
     let update = req.body;
