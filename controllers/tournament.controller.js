@@ -8,6 +8,49 @@ function pruebaTorneo(req, res) {
     return res.send({message:'Funcionando Controlador de Torneo :)'});
 }
 
+function setTorneo(req, res){
+    var userId = req.params.id;
+    var params = req.body;
+    var torneo = new Torneo();
+
+
+    if(userId != req.user.sub){
+        return res.status(500).send({message: 'No tienes permisos para realizar esta acción'})
+    }else{
+        User.findById(userId, (err, userFind)=>{
+            if(err){
+                return res.status(500).send({message: 'Error general'})
+            }else if(userFind){
+                torneo.name = params.name;
+                torneo.typetournamen = params.typetournamen;
+                torneo.awards = params.awards;
+
+                torneo.save((err, contactSaved)=>{
+                    if(err){
+                        return res.status(500).send({message: 'Error general al guardar'})
+                    }else if(contactSaved){
+                        User.findByIdAndUpdate(userId, {$push:{torneo: contactSaved._id}}, {new: true}, (err, contactPush)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general al agergar contacto'})
+                            }else if(contactPush){
+                                return res.send({message: 'Torneo agregado', contactPush});
+                            }else{
+                                return res.status(500).send({message: 'Error al agregar contacto'})
+                            }
+                        }).populate('torneo')
+                    }else{
+                        return res.status(404).send({message: 'No se guardó el contacto'})
+                    }
+                })
+            }else{
+                return res.status(404).send({message: 'El usuario al que deseas agregar el contacto no existe.'})
+            }
+        })
+    }
+}
+
+
+
 function createTorneo(req, res) {
     var  userId = req.params.id;
     var torneo = new Torneo();
@@ -33,13 +76,13 @@ function createTorneo(req, res) {
                             }else if(torneoSaved){
                                 User.findByIdAndUpdate(userId, {$push:{torneo: torneoSaved._id}}, {new: true}, (err, torneoPush)=>{
                                     if(err){
-                                        return res.status(500).send({message: 'Error general '})
+                                        return res.status(500).send({message: 'Error general '});
                                     }else if(torneoPush){
                                         return res.send({message: 'Torneo Creada Exitosamente', torneoPush});
                                     }else{
-                                        return res.status(500).send({message: 'Error al crearun torneo'})
+                                        return res.status(500).send({message: 'Error al crearun torneo'});
                                     }
-                                }).populate('torneo')
+                                }).populate('torneo');
                             }else{
                                 return res.status(404).send({message: 'No se creo el torneo'})
                             }
@@ -53,8 +96,8 @@ function createTorneo(req, res) {
     }else{
         return res.send({message: 'Por favor ingresa los datos obligatorios'});
     }
-
 }
+
 
 function updateTorneo(req, res) {
     let userId = req.params.idU;
@@ -138,7 +181,7 @@ function removeTorneo(req, res){
 }
 
 function getTorneo(req, res) {
-    Torneo.find({}).populate('liga').exec((err, torneo)=>{
+    Torneo.find({}).populate('torneo').exec((err, torneo)=>{
         if(err){
                 return res.status(500).send({message: 'Error general en el servidor'})
         }else if(torneo){
@@ -154,5 +197,6 @@ module.exports = {
     createTorneo,
     updateTorneo,
     removeTorneo,
-    getTorneo
+    getTorneo,
+    setTorneo
 }
