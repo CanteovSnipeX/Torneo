@@ -49,8 +49,6 @@ function setTorneo(req, res){
     }
 }
 
-
-
 function createTorneo(req, res) {
     var  userId = req.params.id;
     var torneo = new Torneo();
@@ -97,7 +95,6 @@ function createTorneo(req, res) {
         return res.send({message: 'Por favor ingresa los datos obligatorios'});
     }
 }
-
 
 function updateTorneo(req, res) {
     let userId = req.params.idU;

@@ -47,7 +47,6 @@ function getResult(req , res) {
     })
 }
 
-
 function addPuntos(req, res) {
     var resultId = req.params.id;
     var goles = new Goles ();
@@ -70,23 +69,19 @@ function addPuntos(req, res) {
                             }else if(saved){
                                 Result.findByIdAndUpdate
                             }else{
-
                             }
                         })
                     }else{
-
                     }
                 })
 
             }
         })
-
     }else{
-
     }
-
-    
 }
+
+
 
 
 module.exports = {
