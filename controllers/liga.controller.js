@@ -115,7 +115,7 @@ function removeLiga(req, res) {
 }
 
 function getLIga(req, res) {
-    Liga.find({}).populate('grupo').exec((err, ligas)=>{
+    Liga.find({}).populate('liga').exec((err, ligas)=>{
         if(err){
                 return res.status(500).send({message: 'Error general en el servidor'})
         }else if(ligas){
