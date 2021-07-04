@@ -25,7 +25,6 @@ function login(req, res){
                         return res.status(500).send({message: 'Error general en la verificación de la contraseña'});
                     }else if(checkPassword){
                         if(params.gettoken){
-			    delete userFind.password
                             return res.send({ token: jwt.createToken(userFind), user: userFind});
                         }else{
                             return res.send({ message: 'Usuario logeado'});
@@ -37,7 +36,7 @@ function login(req, res){
             }else{
                 return res.send({message: 'Ususario no encontrado'});
             }
-        }).populate('contacts')
+        }).populate('torneo');
     }else{
         return res.status(401).send({message: 'Por favor ingresa los datos obligatorios'});
     }

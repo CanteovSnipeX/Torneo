@@ -2,7 +2,6 @@
 
 var Torneo = require('../models/Tournament.model');
 var User = require('../models/user.model');
-var bcrypt = require('bcrypt-nodejs');
 
 function pruebaTorneo(req, res) {
     return res.send({message:'Funcionando Controlador de Torneo :)'});
@@ -137,44 +136,29 @@ function updateTorneo(req, res) {
 function removeTorneo(req, res){
     let userId = req.params.idU;
     let torneoId = req.params.idT;
-    let params = req.body;
 
-    User.findOne({_id : userId}, (err, userFind)=>{
-        if(err){
-            return res.status(500).send({message: 'Error general al eliminar'});
-        }else if(userFind){
-            bcrypt.compare(params.password,userFind.password, (err, checkPassword)=>{
+    if(userId != req.user.sub){
+        return res.status(500).send({message: 'No tienes permisos para realizar esta acción'});
+    }else{
+        User.findOneAndUpdate({_id: userId, torneo: torneoId},
+            {$pull:{torneo: torneoId}}, {new:true}, (err, contactPull)=>{
                 if(err){
-                    return res.status(500).send({message: 'Error general al verificar contraseña'});
-                }else if(checkPassword){
-                    User.findOneAndUpdate({_id: userId, torneo: torneoId},
-                        {$pull:{liga: torneoId}}, {new:true}, (err, contactPull)=>{
-                            if(err){
-                                return res.status(500).send({message: 'Error general'});
-                            }else if(contactPull){
-                                Torneo.findByIdAndRemove(torneoId, (err, contactRemoved)=>{
-                                    if(err){
-                                        return res.status(500).send({message: 'Error general al eliminar el torneo'});
-                                    }else if(contactRemoved){
-                                        return res.send({message: 'torneo eliminado', contactPull});
-                                    }else{
-                                        return res.status(500).send({message: 'Torneo no encontrado, o ya eliminado'});
-                                    }
-                                })
-                            }else{
-                                return res.status(500).send({message: 'No se pudo eliminar el Torneo '});
-                            }
-                })
+                    return res.status(500).send({message: 'Error general'});
+                }else if(contactPull){
+                    Torneo.findByIdAndRemove(torneoId, (err, contactRemoved)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general al eliminar contacto'});
+                        }else if(contactRemoved){
+                            return res.send({message: 'Torneo eliminado', contactPull});
+                        }else{
+                            return res.status(500).send({message: 'Contacto no encontrado, o ya eliminado'});
+                        }
+                    })
                 }else{
-                    return res.status(401).send({message: 'Contraseña incorrecta, no puedes eliminar tu cuenta sin tu contraseña'});
+                    return res.status(500).send({message: 'No se pudo eliminar el contacto del usuario'});
                 }
-            })
-
-        }else{
-            return res.status(403).send({message: 'Torneo no eliminado'});
-        }
-    })
-
+            }).populate('torneo')
+    }
 }
 
 function getTorneo(req, res) {
