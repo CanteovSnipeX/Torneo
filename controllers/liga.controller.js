@@ -103,7 +103,7 @@ function removeLiga(req, res) {
                         if(err){
                             return res.status(500).send({message: 'Error general al eliminar contacto'});
                         }else if(contactRemoved){
-                            return res.send({message: 'Liga eliminado'});
+                            return res.send({message: 'Liga eliminado', contactRemoved});
                         }else{
                             return res.status(500).send({message: 'Liga no encontrado, o ya eliminado'});
                         }
