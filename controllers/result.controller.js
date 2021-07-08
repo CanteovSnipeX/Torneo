@@ -1,6 +1,5 @@
 'use strict'
 
-var Goles = require('../models/goles.model')
 var Result  = require('../models/results.model');
 
 

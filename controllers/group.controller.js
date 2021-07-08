@@ -1,7 +1,7 @@
 'use strict'
 
-var Group = require('../models/group.model');
-var Liga = require('../models/liga.model');
+var Group = require('../models/team.model');
+var Liga = require('../models/group.model');
 var fs = require('fs');
 var path = require('path');
 

@@ -1,7 +1,7 @@
 'use strict'
 
 var Torneo = require('../models/Tournament.model');
-var Liga = require('../models/liga.model');
+var Liga = require('../models/group.model');
 
 
 function pruebaLiga(req, res) {
