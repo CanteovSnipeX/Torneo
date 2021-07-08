@@ -5,9 +5,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var partidosSchema = Schema({
-  jornadas:String,
+  jornada:String,
+  name:String,
   equipo1:String,
   equipo2:String
 });
 
-module.exports = mongoose.model('partidos', partidosSchema);
+module.exports = mongoose.model('partido', partidosSchema);

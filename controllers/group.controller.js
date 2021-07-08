@@ -1,117 +1,50 @@
 'use strict'
 
-var Group = require('../models/team.model');
+var Torneo = require('../models/Tournament.model');
 var Liga = require('../models/group.model');
-var fs = require('fs');
-var path = require('path');
 
 
-
-function pruebaGroup(req, res) {
-    return res.send({message:'Funcionando desde el controlador de group'});
+function pruebaLiga(req, res) {
+    return res.send({message:'Fundinado desde el controlador de liga'});
 }
 
-
-function uploadImage(req, res){
-    var grupoId = req.params.idG;
-    let ligaId = req.params.idL;
-    var update = req.body;
-    var fileName;
-
-   
-        if(req.files){
-
-            var filePath = req.files.image.path;
-            var fileSplit = filePath.split('\\');
-            var fileName = fileSplit[2];
-
-            var extension = fileName.split('\.');
-            var fileExt = extension[1];
-            if( fileExt == 'png' ||
-                fileExt == 'jpg' ||
-                fileExt == 'jpeg' ||
-                fileExt == 'gif'){
-
-                    Liga.findOne({_id: ligaId, grupo: grupoId}, (err, ligaFind) => {
-                        if(err){
-                            return res.status(500).send({message: 'Error general en la actualización'});
-                        }else if(ligaFind){
-                            Group.findByIdAndUpdate(grupoId, {image:fileName},{new:true}, (err, grupoUpdate) => {
-                                if(err){
-                                    return res.status(500).send({message: 'Error general en la actualización'});
-                                }else if(grupoUpdate){
-                                    return res.send({message: 'Grupo actualizado', grupoUpdate});
-                                }else{
-                                    return res.status(404).send({message: 'Contacto no actualizado'});
-                                }
-                            }) 
-                        }else{
-                            return res.status(404).send({message: 'Liga no Existente'})
-                        }
-                    })
-                }else{
-                    fs.unlink(filePath, (err)=>{
-                        if(err){
-                            res.status(500).send({message: 'Extensión no válida y error al eliminar archivo'});
-                        }else{
-                            res.send({message: 'Extensión no válida'})
-                        }
-                    })
-                }
-        }else{
-            res.status(400).send({message: 'No has enviado imagen a subir'})
-        }
-}
-
-
-function getImage(req, res){
-    var fileName = req.params.fileName;
-    var pathFile = './uploads/equipos/' + fileName;
-
-    fs.exists(pathFile, (exists)=>{
-        if(exists){
-            res.sendFile(path.resolve(pathFile));
-        }else{
-            res.status(404).send({message: 'Imagen inexistente'});
-        }
-    })
-}
-
-function creategrupo(req, res) {
-    var ligaId = req.params.id;
-    var grupo = new Group();
+function createLiga(req, res) {
+    var torneoId = req.params.id;
     var params = req.body;
+    var liga = new Liga();
 
-    if(params.name){
-        Group.findOne({},(err) => {
+    if(params.name && params.Directors ){
+        Liga.findOne({name: params.name},(err,ligaFind)=>{
             if(err){
                 return res.status(500).send({message: 'Error general en el servidor'});
+            }else if(ligaFind){
+                return res.send({message: 'Nombre de usuario ya en uso'});
             }else{
-                Liga.findById(ligaId, (err, ligaFind) => {
+                Torneo.findById(torneoId, (err, userFind)=>{
                     if(err){
                         return res.status(500).send({message: 'Error general'})
-                    }else if(ligaFind){
-                        grupo.name = params.name;
-                        grupo.nintegrantes = params.nintegrantes;
-                        grupo.save((err, grupoSaved)=>{
+                    }else if(userFind){
+                        liga.name = params.name;
+                        liga.Directors = params.Directors;
+                        liga.save((err, ligaSaved)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general al guardar'})
-                            }else if(grupoSaved){
-                                Liga.findByIdAndUpdate(ligaId, {$push:{grupo: grupoSaved._id}}, {new: true}, (err, Push)=>{
+                            }else if(ligaSaved){
+                                Torneo.findByIdAndUpdate(torneoId, {$push:{liga: ligaSaved._id}}, {new: true}, (err, ligaPush)=>{
                                     if(err){
-                                        return res.status(500).send({message: 'Error general'})
-                                    }else if(Push){
-                                        return res.send({message: 'Gropo Creada Exitosamente', Push});
+                                        return res.status(500).send({message: 'Error general '})
+                                    }else if(ligaPush){
+                                        return res.send({message: 'Creada Exitosamente', ligaPush});
                                     }else{
-                                        return res.status(500).send({message: 'Error al crear el grupo'});
+                                        return res.status(500).send({message: 'Error al crear el grupo'})
                                     }
-                                }).populate('grupo');
+                                }).populate('liga')
                             }else{
-                                return res.status(404).send({message: 'No se creo el grupo'})
+                                return res.status(404).send({message: 'No se creo la grupo'})
                             }
                         })
                     }else{
-                        return res.status(404).send({message: 'la liga al que deseas agregar el grupo no existe.'})
+                        return res.status(404).send({message: 'El usuario al que deseas agregar el contacto no existe.'})
                      }
                  })   
             }
@@ -119,106 +52,84 @@ function creategrupo(req, res) {
     }else{
         return res.send({message: 'Por favor ingresa los datos obligatorios'});
     }
-
 }
 
-function updateGrupo(req, res) {
+function updateLiga(req, res) {
+    let torneoId = req.params.idT;
     let ligaId = req.params.idL;
-    let grupoId = req.params.idG;
     let update = req.body;
 
-    if(update.name){
-        Group.findById(grupoId,(err, grupoFind) => {
-            if(err){
-                return res.status(500).send({message: 'Error general al buscar'});
-            }else if(grupoFind){
-                Liga.findOne({_id: ligaId, grupo: grupoId}, (err, ligaFind) => {
-                    if(err){
-                        return res.status(500).send({message: 'Error general en la actualización'});
-                    }else if(ligaFind){
-                        Group.findByIdAndUpdate(grupoId, update,{new:true}, (err, grupoUpdate) => {
-                            if(err){
-                                return res.status(500).send({message: 'Error general en la actualización'});
-                            }else if(grupoUpdate){
-                                return res.send({message: 'Grupo actualizado', grupoUpdate});
-                            }else{
-                                return res.status(404).send({message: 'Contacto no actualizado'});
-                            }
-                        }) 
-                    }else{
-                        return res.status(404).send({message: 'Liga no Existente'})
-                    }
-                })
-            }else{
-                return res.status(404).send({message: 'Grupo a actualizar inexistente'});
-            }
-        })
-
-    }else{
-        return res.status(404).send({message: 'Por favor ingresa los datos mínimos para actualizar'});
-    }
-
-
-}
-
-function removeGrupo(req, res) {
-    let ligaId = req.params.idL;
-    let grupoId = req.params.idG;
-    let params = req.body;
- 
-   if(params.remove){
-    Group.findOne({name: params.remove}, (err, remove) => {
-    if(err){
-        return res.status(500).send({message: 'Error general'});
-    }else if(remove){
-        Liga.findOneAndUpdate({_id: ligaId, grupo: grupoId} , {$pull:{grupo: grupoId}}, {new:true}, (err, contactPull)=>{
-            if(err){
-                return res.status(500).send({message: 'Error general'});
-            }else if(contactPull){
-                Group.findByIdAndRemove(grupoId, (err, contactRemoved)=>{
-                    if(err){
-                        return res.status(500).send({message: 'Error general al eliminar contacto'});
-                    }else if(contactRemoved){
-                        return res.send({message: 'Grupo eliminado'});
-                    }else{
-                        return res.status(500).send({message: 'Liga no encontrado, o ya eliminado'});
-                    }
-                })
-            }else{
-                return res.status(500).send({message: 'No se pudo eliminarla liga del torneo'});
-      }
-})
-     }else{
-        return res.status(403).send({message: 'El grupo ya fue eliminado o el nombre esta escrito de forma erronea'});
+        if(update.name && update.Directors){
+            Liga.findById(ligaId, (err, ligaFind)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general al buscar'});
+                }else if(ligaFind){
+                    Torneo.findOne({_id: torneoId, liga: ligaId}, (err, userFind)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general en la busqueda de usuario'});
+                        }else if(userFind){
+                            Liga.findByIdAndUpdate(ligaId, update, {new: true}, (err, ligaUpdated)=>{
+                                if(err){
+                                    return res.status(500).send({message: 'Error general en la actualización'});
+                                }else if(ligaUpdated){
+                                    return res.send({message: 'Contacto actualizado', ligaUpdated});
+                                }else{
+                                    return res.status(404).send({message: 'Contacto no actualizado'});
+                                }
+                            }).populate('');
+                        }else{
+                            return res.status(404).send({message: 'Torneo no Existente'})
+                        }
+                    })
+                }else{
+                    return res.status(404).send({message: 'Liga a actualizar inexistente'});
+                }
+            })
+        }else{
+            return res.status(404).send({message: 'Por favor ingresa los datos mínimos para actualizar'});
      }
-    })
-   }else{
-    return res.status(403).send({message: 'Ingrese el Nombre del grupo para eliminar'});
-   }
-
-
 }
 
-function getGroup(req, res) {
-    Group.find({}).populate('').exec((err, groups) => {
+function removeLiga(req, res) {
+    let torneoId = req.params.idT;
+    let ligaId = req.params.idL;
+    
+        Torneo.findOneAndUpdate({_id: torneoId, liga: ligaId},
+            {$pull:{liga: ligaId}}, {new:true}, (err, contactPull)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general'});
+                }else if(contactPull){
+                    Liga.findByIdAndRemove(ligaId, (err, contactRemoved)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general al eliminar contacto'});
+                        }else if(contactRemoved){
+                            return res.send({message: 'Eliminado Existosamente', contactRemoved});
+                        }else{
+                            return res.status(500).send({message: 'Liga no encontrado, o ya eliminado'});
+                        }
+                    })
+                }else{
+                    return res.status(500).send({message: 'No se pudo eliminarla el grupo o ya fue aliminado '});
+          }
+    })
+}
+
+function getLigas(req, res) {
+    Liga.find({}).populate('liga').exec((err, ligas)=>{
         if(err){
                 return res.status(500).send({message: 'Error general en el servidor'})
-        }else if(groups){
-                return res.send({message: 'Equipos: ', groups})
+        }else if(ligas){
+                return res.send({message: 'Ligas en Existencias:',ligas})
         }else{
-                return res.status(404).send({message: 'No hay registros'})
+            return res.status(403).send({message: 'No hay registros'})
         }
     })
 }
 
-
 module.exports = {
-    pruebaGroup,
-    uploadImage,
-    getImage,
-    creategrupo,
-    updateGrupo,
-    removeGrupo,
-    getGroup
-    
+    pruebaLiga,
+    createLiga,
+    updateLiga,
+    removeLiga,
+    getLigas
 }

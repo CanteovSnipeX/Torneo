@@ -261,7 +261,7 @@ function getUsers(req, res){
             }else{
                     return res.status(404).send({message: 'No hay registros'})
             }
-        })
+        })    
 
 }
 

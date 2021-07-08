@@ -7,8 +7,8 @@ var ligaSchema = Schema({
    name:String,
    Directors:String,
    image:String,
-   team: [{type: Schema.ObjectId, ref: 'grupo'}],
-   partidos: [{type: Schema.ObjectId, ref: 'partidos'}] 
+   grupo: [{type: Schema.ObjectId, ref: 'grupo'}],
+   partido: [{type: Schema.ObjectId, ref: 'partido'}] 
    
 });
 

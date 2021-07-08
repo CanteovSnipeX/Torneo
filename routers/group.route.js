@@ -2,18 +2,14 @@
 
 var express = require('express');
 var groupController = require('../controllers/group.controller');
-var  mdAuth = require('../middlewares/authenticated');
-var connectMultiparty = require('connect-multiparty');
-var upload = connectMultiparty({ uploadDir: './uploads/equipos'})
+var mdAuth = require('../middlewares/authenticated');
 
 var api = express.Router();
 
+api.get('/pruebaLiga',[mdAuth.ensureAuth, mdAuth.ensureAuthAdmin],groupController.pruebaLiga);
+api.post('/createLiga/:id',mdAuth.ensureAuth,groupController.createLiga);
+api.put('/:idT/updateLiga/:idL',mdAuth.ensureAuth,groupController.updateLiga);
+api.put('/:idT/removeLiga/:idL',mdAuth.ensureAuth,groupController.removeLiga);
+api.get('/getLigas',mdAuth.ensureAuth,groupController.getLigas);
 
-api.get('/pruebaGroup',groupController.pruebaGroup);
-api.post('/creategrupo/:id', groupController.creategrupo);
-api.put('/:idL/updateGrupo/:idG',groupController.updateGrupo);
-api.put('/:idL/removeGrupo/:idG',groupController.removeGrupo);
-api.get('/getGroup',groupController.getGroup);
-api.put('/:idL/uploadImage/:idG', [upload],groupController.uploadImage); 
-api.get('/getImageEquipos/:fileName', [upload],groupController.getImage);
 module.exports = api;
