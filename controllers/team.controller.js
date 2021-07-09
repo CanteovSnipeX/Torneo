@@ -267,6 +267,46 @@ function createPatido(req, res) {
 
 }
 
+function finalizacionPartido(req, res) {
+    
+    var grupoId = req.params.idG
+    var partidoId = req.params.idP
+    let params = req.body;
+
+    if(params.remove){
+        Partido.findOne({name: params.remove}, (err, remove) => {
+        if(err){
+            return res.status(500).send({message: 'Error general'});
+        }else if(remove){
+            Grupo.findOneAndUpdate({_id: grupoId, partidos: partidoId} , {$pull:{partidos: partidoId}}, {new:true}, (err, groupPull)=>{
+                if(err){
+                    return res.status(500).send({message: 'Error general'});
+                }else if(groupPull){
+                    Partido.findByIdAndRemove(partidoId, (err, Removed)=>{
+                        if(err){
+                            return res.status(500).send({message: 'Error general al eliminar contacto'});
+                        }else if(Removed){
+                            return res.send({message: 'Grupo eliminado',Removed});
+                        }else{
+                            return res.status(500).send({message: 'Liga no encontrado, o ya eliminado'});
+                        }
+                    })
+                }else{
+                    return res.status(500).send({message: 'No se pudo eliminarla equipo del grupo'});
+          }
+    })
+         }else{
+            return res.status(403).send({message: 'El grupo ya fue eliminado o el nombre esta escrito de forma erronea'});
+         }
+        })
+       }else{
+        return res.status(403).send({message: 'Ingrese el nombre del equipo para poder eliminar'});
+       }
+    
+    
+}
+
+
 
 module.exports = {
     pruebaGroup,
@@ -277,6 +317,6 @@ module.exports = {
     removeTeam,
     getTeams,
     //partidos
-    createPatido
-    
+    createPatido,
+    finalizacionPartido  
 }

@@ -6,9 +6,9 @@ var Schema = mongoose.Schema;
 
 var resultsSchema = Schema({
    jornada:String,
-   Equipo1:String,
-   Equipo2:String,
-   gool: [{type: Schema.ObjectId, ref: 'gool'}]
+   name:String,
+   teamOne:String, goles: [Number],
+   teamOne:String, goles: [Number],
 });
 
-module.exports = mongoose.model('results', resultsSchema);
+module.exports = mongoose.model('result', resultsSchema);
