@@ -3,13 +3,13 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var ligaSchema = Schema({
+var grupoSchem = Schema({
    name:String,
    Directors:String,
    image:String,
-   grupo: [{type: Schema.ObjectId, ref: 'grupo'}],
+   team: [{type: Schema.ObjectId, ref: 'team'}],
    partido: [{type: Schema.ObjectId, ref: 'partido'}] 
    
 });
 
-module.exports = mongoose.model('liga', ligaSchema);
+module.exports = mongoose.model('grupo', grupoSchem);

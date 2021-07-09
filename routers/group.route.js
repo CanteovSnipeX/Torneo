@@ -7,9 +7,9 @@ var mdAuth = require('../middlewares/authenticated');
 var api = express.Router();
 
 api.get('/pruebaLiga',[mdAuth.ensureAuth, mdAuth.ensureAuthAdmin],groupController.pruebaLiga);
-api.post('/createLiga/:id',mdAuth.ensureAuth,groupController.createLiga);
-api.put('/:idT/updateLiga/:idL',mdAuth.ensureAuth,groupController.updateLiga);
-api.put('/:idT/removeLiga/:idL',mdAuth.ensureAuth,groupController.removeLiga);
-api.get('/getLigas',mdAuth.ensureAuth,groupController.getLigas);
+api.post('/createGrupo/:id',mdAuth.ensureAuth,groupController.createGrupo);
+api.put('/:idT/updateGrupo/:idG',mdAuth.ensureAuth,groupController.updateGrupo);
+api.put('/:idT/removeGrupo/:id',mdAuth.ensureAuth,groupController.removeGrupo);
+api.get('/getGrupo',mdAuth.ensureAuth,groupController.getGrupo);
 
 module.exports = api;

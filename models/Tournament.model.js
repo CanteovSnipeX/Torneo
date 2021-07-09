@@ -8,7 +8,7 @@ var tournamentSchema = Schema({
     name: String,
     typetournamen: String,
     awards: String,
-    liga: [{type: Schema.ObjectId, ref: 'liga'}]
+    grupo: [{type: Schema.ObjectId, ref: 'grupo'}]
 });
 
 module.exports = mongoose.model('torneo', tournamentSchema);

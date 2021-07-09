@@ -162,7 +162,7 @@ function removeTorneo(req, res){
 }
 
 function getTorneo(req, res) {
-    Torneo.find({}).populate('liga').exec((err, torneo)=>{
+    Torneo.find({}).populate('grupo').exec((err, torneo)=>{
         if(err){
                 return res.status(500).send({message: 'Error general en el servidor'})
         }else if(torneo){

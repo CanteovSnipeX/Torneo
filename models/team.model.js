@@ -4,10 +4,10 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var groupSchema = Schema({
+var teamSchema = Schema({
    name:String,
    nintegrantes:String,
    image:String,
 });
 
-module.exports = mongoose.model('grupo', groupSchema);
+module.exports = mongoose.model('team', teamSchema);
