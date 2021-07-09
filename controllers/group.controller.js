@@ -38,7 +38,7 @@ function createLiga(req, res) {
                                     }else{
                                         return res.status(500).send({message: 'Error al crear el grupo'})
                                     }
-                                }).populate('liga')
+                                }).populate('liga');
                             }else{
                                 return res.status(404).send({message: 'No se creo la grupo'})
                             }
