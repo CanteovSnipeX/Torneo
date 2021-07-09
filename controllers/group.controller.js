@@ -13,8 +13,8 @@ function createGrupo(req, res) {
     var params = req.body;
     var grupo = new Grupo();
 
-    if(params.name && params.Directors ){
-        Grupo.findOne({name: params.name},(err,ligaFind)=>{
+    if(params.Directors ){
+        Grupo.findOne({name: params.Directors  },(err,ligaFind)=>{
             if(err){
                 return res.status(500).send({message: 'Error general en el servidor'});
             }else if(ligaFind){

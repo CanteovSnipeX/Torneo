@@ -19,7 +19,7 @@ api.get('/getImageTeam/:fileName', [upload],teamController.getImageTeam);
 
 //rutas  de partidios
 api.post('/createPatido/:id',mdAuth.ensureAuth,teamController.createPatido);
-applicationCache.put(':idG/finalizacionPartido/:idP',mdAuth.ensureAuth,teamController.finalizacionPartido);
+api.put(':idG/finalizacionPartido/:idP',mdAuth.ensureAuth,teamController.finalizacionPartido);
 
 
 module.exports = api;
