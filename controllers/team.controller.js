@@ -217,30 +217,31 @@ var Partido = require('../models/partidos.model');
 
 //Funciones de partidos 
 
-function createPatido(req, res) {
-    var ligaId = req.params.id;
+function createPartido(req, res) {
+    var grupoId = req.params.id;
     var partido = new Partido();
     var params = req.body;
-    if( params.equipo1 &&  params.equipo2){
-        Partido.findOne({equipo1: params.equipo1 , equipo2:params.equipo2},(err,partidosFind) => {
+
+    if( params.name){
+        Partido.findOne({name: params.name},(err,partidosFind) => {
             if(err){
                 return res.status(500).send({message: 'Error general en el servidor'});
             }else if(partidosFind){
                     return res.status(500).send({message:'Estos equipos ya estan dentro de un partido '});
                 }else{
-                Liga.findById(ligaId, (err, ligaFind) => {
+                Grupo.findById(grupoId, (err, ligaFind) => {
                     if(err){
                         return res.status(500).send({message: 'Error general'})
                     }else if(ligaFind){
                         partido.jornada = params.jornada;
                         partido.name = params.name;
-                        partido.equipo1 = params.equipo1;
-                        partido.equipo2 = params.equipo2;
+                        partido.teamOne = params.teamOne;
+                        partido.teamTwo = params.teamTwo;
                         partido.save((err, partidosSaved)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general al guardar'})
                             }else if(partidosSaved){
-                                Liga.findByIdAndUpdate(ligaId, {$push:{partido: partidosSaved._id}}, {new: true}, (err, Push)=>{
+                                Grupo.findByIdAndUpdate(grupoId , {$push:{partido: partidosSaved._id}}, {new: true}, (err, Push)=>{
                                     if(err){
                                         return res.status(500).send({message: 'Error general'})
                                     }else if(Push){
@@ -306,6 +307,19 @@ function finalizacionPartido(req, res) {
     
 }
 
+function getPartidos(req, res){
+    Partido.find({}).populate('partido').exec((err, match) => {
+            if(err){
+                    return res.status(500).send({message: 'Error general en el servidor'})
+            }else if(match){
+                    return res.send({message: 'Usuarios: ', match})
+            }else{
+                    return res.status(404).send({message: 'No hay registros'})
+            }
+        })    
+
+}
+
 
 
 module.exports = {
@@ -317,6 +331,7 @@ module.exports = {
     removeTeam,
     getTeams,
     //partidos
-    createPatido,
-    finalizacionPartido  
+    createPartido,
+    finalizacionPartido ,
+    getPartidos 
 }
