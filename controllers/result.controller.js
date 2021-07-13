@@ -1,41 +1,45 @@
 'use strict'
-
+var Team = require('../models/team.model');
 var Result  = require('../models/results.model');
 
 
 function crearResult (req ,res) {
-    var result = new Result();
+    var teamId = req.params.id;
     var params = req.body;
-     
-    if(params.jornada && params.Equipo1 && params.Equipo2){
-        Result.findOne({}, (err, userFind)=>{
-            if(err){
-                return res.status(500).send({message: 'Error general en el servidor'});
-            }else if(userFind){
-                return res.send({message: 'continuemos'});
-            }else{
-            result.jornada = params.jornada;
-            result.Equipo1 = params.Equipo1;
-            result.Equipo2 = params.Equipo2;
-            result.save((err , resultSaved)=>{
-                if(err){
-                    return res.status(500).send({message:'Error'});
-                }else if(resultSaved){
-                        return res.send({message:'resultado guardados', resultSaved});
-                }else{
-                    return res.status(500).send({message: 'No se guardaron los resultados'});
-                }
-             })
-            }
-        })
-        
-     }else{
-        return res.send({message: 'Por favor ingresa los datos obligatorios'});
-     }
+    var result = new Result();
+
+                Team.findById(teamId,(err, Find)=>{
+                    if(err){
+                     return res.status(500).send({message: 'Error general en el servidor'});
+                    }else if(Find){
+                     result.onegoles = params.onegoles;
+                     result.twogoles = params.twogoles;
+                     result.save((err, Saved)=>{
+                         if(err){
+                             return res.status(500).send({message: 'Error general al guardar'}); 
+                         }else if(Saved){
+                             Team.findByIdAndUpdate(teamId,{$push:{result: Saved._id}}, {new:true}, (err, Push)=>{
+                                 if(err){
+                                     return res.status(500).send({message: 'Error general'});
+                                 }else if(Saved){
+                                     return res.send({message: 'Seteados Correctamente', Push});
+                                 }else{
+                                     return res.status(500).send({message: 'Error al setear los resultados'});
+                                 }
+                             } ).populate('result');
+                         }else{
+                             return res.status(404).send({message: 'No se agregaron los resultados'})
+                         }
+                     })
+                 }else{
+                     return res.status(404).send({message: 'Team  no existe!'})
+                    }
+                })
 }
 
+
 function getResult(req , res) {
-    Result.find({}).populate('results').exec((err, result)=>{
+    Result.find({}).populate('result').exec((err, result)=>{
         if(err){
                 return res.status(500).send({message: 'Error general en el servidor'})
         }else if(result){
@@ -46,64 +50,7 @@ function getResult(req , res) {
     })
 }
 
-function addPuntos(req, res) {
-    var resultId = req.params.id;
-    var goles = new Goles ();
-    var params = req.body;
 
-    if(params.resultEquipo &&  params.resultEquipo1){
-        Goles.findOne({},(err)=>{
-            if(err){
-                return res.status(500).send({message:'Error'});
-            }else{
-                Result.findById(resultId,(err, golesFind)=>{
-                    if(err){
-                        return res.status(500).send({message: 'Error general'});
-                    }else if(golesFind){
-                        goles.resultEquipo = params.resultEquipo;
-                        goles.resultEquipo1 = params.resultEquipo1;
-                        goles.save((err,saved)=>{
-                            if(err){
-                                return res.status(500).send({message: 'Error general al guardar'});
-                            }else if(saved){
-                                Result.findByIdAndUpdate
-                            }else{
-                            }
-                        })
-                    }else{
-                    }
-                })
-
-            }
-        })
-    }else{
-    }
-}
-function putosdiferencias(req , res) {
-    var foo = 1;
-    var output = 'Salida: ';
-    switch (foo) {
-      case 10:
-        output += '¿Y ';
-      case 1:
-        output += 'Cuál ';
-        output += 'Es ';
-      case 2:
-        output += 'Tu ';
-      case 3:
-        output += 'Nombre';
-      case 4:
-        output += '?';
-        console.log(output);
-        break;
-      case 5:
-        output += '!';
-        console.log(output);
-        break;
-      default:
-        console.log('Por favor, selecciona un valor del 1 al 6.');
-    }
-}
 
 
 module.exports = {

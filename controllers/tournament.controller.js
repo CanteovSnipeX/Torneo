@@ -161,6 +161,7 @@ function removeTorneo(req, res){
     }
 }
 
+
 function getTorneo(req, res) {
     Torneo.find({}).populate('grupo').exec((err, torneo)=>{
         if(err){

@@ -9,7 +9,6 @@ var grupoSchem = Schema({
    image:String,
    team: [{type: Schema.ObjectId, ref: 'team'}],
    partido: [{type: Schema.ObjectId, ref: 'partido'}] 
-   
 });
 
 module.exports = mongoose.model('grupo', grupoSchem);
