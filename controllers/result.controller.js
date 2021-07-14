@@ -8,7 +8,7 @@ function crearResult (req ,res) {
     var result = new Result();
 
     if(params.teamOne && params.teamTwo){
-        Result.findOne({teamOne: params.teamOne , teamTwo: params.teamTwo}, (err, resultFind)=>{
+        Result.findOne({teamOne: params.teamOne}, (err, resultFind)=>{
             if(err){
                 return res.status(500).send({message: 'Error general en el servidor'});
             }else if(resultFind){
