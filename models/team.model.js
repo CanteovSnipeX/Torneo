@@ -8,7 +8,7 @@ var teamSchema = Schema({
    name:String,
    nintegrantes:String,
    image:String,
-   result: [{type: Schema.ObjectId, ref:'result'}],
+   report:[{type: Schema.ObjectId, ref:'report'}]
 });
 
 module.exports = mongoose.model('team', teamSchema);

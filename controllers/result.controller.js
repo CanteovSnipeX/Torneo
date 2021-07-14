@@ -1,40 +1,55 @@
 'use strict'
-var Team = require('../models/team.model');
 var Result  = require('../models/results.model');
-
+var Partido = require('../models/partidos.model');
 
 function crearResult (req ,res) {
-    var teamId = req.params.id;
+    var partidoId = req.params.id;
     var params = req.body;
     var result = new Result();
 
-                Team.findById(teamId,(err, Find)=>{
+    if(params.teamOne && params.teamTwo){
+        Result.findOne({teamOne: params.teamOne , teamTwo: params.teamTwo}, (err, resultFind)=>{
+            if(err){
+                return res.status(500).send({message: 'Error general en el servidor'});
+            }else if(resultFind){
+                return res.send({message: 'Ya se agregaron los resultados al partido'});
+            }else{
+                Partido.findById(partidoId,(err, matchFind)=>{
                     if(err){
-                     return res.status(500).send({message: 'Error general en el servidor'});
-                    }else if(Find){
-                     result.onegoles = params.onegoles;
-                     result.twogoles = params.twogoles;
-                     result.save((err, Saved)=>{
-                         if(err){
-                             return res.status(500).send({message: 'Error general al guardar'}); 
-                         }else if(Saved){
-                             Team.findByIdAndUpdate(teamId,{$push:{result: Saved._id}}, {new:true}, (err, Push)=>{
-                                 if(err){
-                                     return res.status(500).send({message: 'Error general'});
-                                 }else if(Saved){
-                                     return res.send({message: 'Seteados Correctamente', Push});
-                                 }else{
-                                     return res.status(500).send({message: 'Error al setear los resultados'});
-                                 }
-                             } ).populate('result');
-                         }else{
-                             return res.status(404).send({message: 'No se agregaron los resultados'})
-                         }
-                     })
-                 }else{
-                     return res.status(404).send({message: 'Team  no existe!'})
+                        return res.status(500).send({message: 'Error general'})
+                    }else if(matchFind){
+                        result.teamOne = params.teamOne;
+                        result.teamTwo = params.teamTwo;
+                        result.onegoles = params.onegoles;
+                        result.twogoles = params.twogoles;
+                        result.save((err, resultSaved)=>{
+                            if(err){
+                                return res.status(500).send({message: 'Error general al guardar'})
+                            }else if (resultSaved){
+                                Partido.findByIdAndUpdate(partidoId,{$push:{result: resultSaved._id}}, {new:true} , (err, resultPush)=>{
+                                    if(err){
+                                        return res.status(500).send({message: 'Error general '});
+                                    }else if(resultPush){
+                                        return res.send({message: 'Se agregaron los resultados correctamente',resultPush });
+                                    }else{
+                                        return res.status(500).send({message: 'Error al gruadar'});
+                                    }
+                                }).populate('result');
+                            }else{
+                                return res.status(404).send({message: 'No se agregaron los resultados'})
+                            }
+                        })
+                    }else{
+                        return res.status(404).send({message: 'El partido o no existe o ya fue finalizado '})
+
                     }
                 })
+            }
+        })
+    }else{
+        return res.send({message: 'Por favor ingresa los datos obligatorios'});
+    }
+
 }
 
 

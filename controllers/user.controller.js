@@ -188,6 +188,7 @@ function saveUserByAdmin(req, res) {
         }
     }
 }
+
 function updateUser(req, res) {
     let userId = req.params.id;
     let update = req.body;

@@ -308,7 +308,7 @@ function finalizacionPartido(req, res) {
 }
 
 function getPartidos(req, res){
-    Partido.find({}).populate('partido').exec((err, match) => {
+    Partido.find({}).populate('result').exec((err, match) => {
             if(err){
                     return res.status(500).send({message: 'Error general en el servidor'})
             }else if(match){

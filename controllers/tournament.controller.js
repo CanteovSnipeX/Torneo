@@ -95,6 +95,7 @@ function createTorneo(req, res) {
     }
 }
 
+
 function updateTorneo(req, res) {
     let userId = req.params.idU;
     let torneoId = req.params.idT;

@@ -9,6 +9,7 @@ var partidosSchema = Schema({
   name:String,
   teamOne:String,
   teamTwo:String,
+  result: [{type: Schema.ObjectId, ref:'result'}],
 });
 
 module.exports = mongoose.model('partido', partidosSchema);
