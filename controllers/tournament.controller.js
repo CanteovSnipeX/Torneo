@@ -50,7 +50,7 @@ function createTorneo(req, res) {
     var torneo = new Torneo();
     var params = req.body;
 
-    if(params.name  ){
+    if(params.name ){
         Torneo.findOne({name: params.name},(err,torneoFind)=>{
             if(err){
                 return res.status(500).send({message: 'Error general en el servidor'});
@@ -66,7 +66,7 @@ function createTorneo(req, res) {
                             if(err){
                                 return res.status(500).send({message: 'Error general al guardar'})
                             }else if(torneoSaved){
-                                User.findByIdAndUpdate(userId, {$push:{torneo: torneoSaved._id}}, {new: true}, (err, torneoPush)=>{
+                                User.findByIdAndUpdate(userId,{$push:{torneo: torneoSaved._id}}, {new: true}, (err, torneoPush)=>{
                                     if(err){
                                         return res.status(500).send({message: 'Error general '});
                                     }else if(torneoPush){
