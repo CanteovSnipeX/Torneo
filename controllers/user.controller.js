@@ -253,6 +253,7 @@ function removeUser(req, res){
     }
 }
 
+
 function getUsers(req, res){
     User.find({}).populate('torneo').exec((err, users) => {
             if(err){

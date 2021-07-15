@@ -1,14 +1,9 @@
+  
+const mongoose = require("mongoose");
 
-'use strict'
-
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-
-var teamSchema = Schema({
-   name:String,
-   nintegrantes:String,
-   image:String,
-   report:[{type: Schema.ObjectId, ref:'report'}]
+const teamSchema = new mongoose.Schema({
+  name: { type: String, required: [true, "El equipo necesita un nombre"] },
+  img: { type: String },
 });
 
-module.exports = mongoose.model('team', teamSchema);
+module.exports = mongoose.model("team", teamSchema);

@@ -9,7 +9,6 @@ var upload = connectMultiparty({ uploadDir: './uploads/equipos'})
 var api = express.Router();
 
 //rutas de Equipos
-api.get('/pruebaGroup',teamController.pruebaGroup);
 api.post('/setTeam/:id',mdAuth.ensureAuth, teamController.setTeam);
 api.put('/:idG/updateTeam/:idt',mdAuth.ensureAuth,teamController.updateTeam);
 api.put('/:idG/removeTeam/:idt',mdAuth.ensureAuth,teamController.removeTeam);
@@ -19,7 +18,8 @@ api.get('/getImageTeam/:fileName', [upload],teamController.getImageTeam);
 
 //rutas  de partidios
 api.post('/createPartido/:id',mdAuth.ensureAuth,teamController.createPartido);
-api.put(':idG/finalizacionPartido/:idP',mdAuth.ensureAuth,teamController.finalizacionPartido);
-api.get('/getPartidos',teamController.getPartidos)
+api.put('/:idT/finalizacionPartido/:idP',mdAuth.ensureAuth,teamController.finalizacionPartido);
+api.get('/getPartidos',mdAuth.ensureAuth,teamController.getPartidos);
+api.put('/:idT/SetGoals/:idP', mdAuth.ensureAuth,teamController.SetGoals);
 
 module.exports = api;

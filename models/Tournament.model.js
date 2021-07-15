@@ -1,14 +1,15 @@
 
 'use strict'
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
 
-var tournamentSchema = Schema({
-    name: String,
-    typetournamen: String,
-    awards: String,
-    grupo: [{type: Schema.ObjectId, ref: 'grupo'}]
+
+const tournamentSchema = new mongoose.Schema({
+    name: { type: String, required: [true, "La Torneo necesita un nombre"] },
+    team: [{type: mongoose.ObjectId, ref: 'team'}],
+    partido: [{type: mongoose.ObjectId, ref: 'partido'}],
+    report: [{type: mongoose.ObjectId, ref: 'report'}],
+
 });
 
 module.exports = mongoose.model('torneo', tournamentSchema);

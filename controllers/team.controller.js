@@ -1,16 +1,9 @@
 'use strict'
 
 var Team = require('../models/team.model');
-var Grupo = require('../models/group.model');
+var Torneo = require('../models/Tournament.model');
 var fs = require('fs');
 var path = require('path');
-
-
-
-function pruebaGroup(req, res) {
-    return res.send({message:'Funcionando desde el controlador de group'});
-}
-
 
 function uploadImageTeam(req, res){
     var teamId = req.params.idt;
@@ -78,7 +71,7 @@ function getImageTeam(req, res){
 }
 
 function setTeam(req, res) {
-    var grupoId = req.params.id;
+    var torneoId = req.params.id;
     var team = new Team();
     var params = req.body;
 
@@ -89,17 +82,16 @@ function setTeam(req, res) {
                 }else if(name){
                     return res.status(500).send({message: 'Nombre ya en uso!'});
             }else{
-                Grupo.findById(grupoId, (err, grupoFind) => {
+                Torneo.findById(torneoId, (err, find) => {
                     if(err){
                         return res.status(500).send({message: 'Error general'})
-                    }else if(grupoFind){
+                    }else if(find){
                         team.name = params.name;
-                        team.nintegrantes = params.nintegrantes;
                         team.save((err, teamSaved)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general al guardar'})
                             }else if(teamSaved){
-                                Grupo.findByIdAndUpdate(grupoId, {$push:{team: teamSaved._id}}, {new: true}, (err, teamPush)=>{
+                                Torneo.findByIdAndUpdate(torneoId, {$push:{team: teamSaved._id}}, {new: true}, (err, teamPush)=>{
                                     if(err){
                                         return res.status(500).send({message: 'Error general'})
                                     }else if(teamPush){
@@ -125,7 +117,7 @@ function setTeam(req, res) {
 }
 
 function updateTeam(req, res) {
-    let grupoId = req.params.idG;
+    let torneoId = req.params.idG;
     let teamId = req.params.idt;
     let update = req.body;
 
@@ -134,7 +126,7 @@ function updateTeam(req, res) {
             if(err){
                 return res.status(500).send({message: 'Error general al buscar'});
             }else if(teamFind){
-                Grupo.findOne({_id: grupoId, team: teamId}, (err, grupoFind) => {
+                Torneo.findOne({_id: torneoId, team: teamId}, (err, grupoFind) => {
                     if(err){
                         return res.status(500).send({message: 'Error general en la actualización'});
                     }else if(grupoFind){
@@ -146,7 +138,7 @@ function updateTeam(req, res) {
                             }else{
                                 return res.status(404).send({message: 'Contacto no actualizado'});
                             }
-                        }) 
+                        }).populate('team')
                     }else{
                         return res.status(404).send({message: 'Liga no Existente'})
                     }
@@ -163,16 +155,11 @@ function updateTeam(req, res) {
 }
 
 function removeTeam(req, res) {
-    let grupoId = req.params.idG;
+    let torneoId = req.params.idG;
     let teamId = req.params.idt;
-    let params = req.body;
  
-   if(params.remove){
-    Team.findOne({name: params.remove}, (err, remove) => {
-    if(err){
-        return res.status(500).send({message: 'Error general'});
-    }else if(remove){
-        Grupo.findOneAndUpdate({_id: grupoId, team: teamId} , {$pull:{team: teamId}}, {new:true}, (err, groupPull)=>{
+ 
+        Torneo.findOneAndUpdate({_id: torneoId, team: teamId},{$pull:{team: teamId}}, {new:true}, (err, groupPull)=>{
             if(err){
                 return res.status(500).send({message: 'Error general'});
             }else if(groupPull){
@@ -180,7 +167,7 @@ function removeTeam(req, res) {
                     if(err){
                         return res.status(500).send({message: 'Error general al eliminar contacto'});
                     }else if(Removed){
-                        return res.send({message: 'Grupo eliminado',Removed});
+                        return res.send({message: 'Equipo eliminado',Removed});
                     }else{
                         return res.status(500).send({message: 'Liga no encontrado, o ya eliminado'});
                     }
@@ -189,14 +176,6 @@ function removeTeam(req, res) {
                 return res.status(500).send({message: 'No se pudo eliminarla equipo del grupo'});
       }
 })
-     }else{
-        return res.status(403).send({message: 'El grupo ya fue eliminado o el nombre esta escrito de forma erronea'});
-     }
-    })
-   }else{
-    return res.status(403).send({message: 'Ingrese el nombre del equipo para poder eliminar'});
-   }
-
 
 }
 
@@ -212,36 +191,36 @@ function getTeams(req, res) {
     })
 }
 
-
 var Partido = require('../models/partidos.model');
 
 //Funciones de partidos 
 
 function createPartido(req, res) {
-    var grupoId = req.params.id;
+    var torneoId = req.params.id;
     var partido = new Partido();
     var params = req.body;
 
-    if( params.name){
+    if( params.name && params.teamOne && params.teamTwo){
         Partido.findOne({name: params.name},(err,partidosFind) => {
             if(err){
                 return res.status(500).send({message: 'Error general en el servidor'});
             }else if(partidosFind){
                     return res.status(500).send({message:'Estos equipos ya estan dentro de un partido '});
                 }else{
-                Grupo.findById(grupoId, (err, ligaFind) => {
+                Torneo.findById(torneoId, (err, ligaFind) => {
                     if(err){
                         return res.status(500).send({message: 'Error general'})
                     }else if(ligaFind){
-                        partido.jornada = params.jornada;
                         partido.name = params.name;
                         partido.teamOne = params.teamOne;
                         partido.teamTwo = params.teamTwo;
+                        partido.goalsTeamOne = 0
+                        partido.goalsTeamTwo = 0
                         partido.save((err, partidosSaved)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general al guardar'})
                             }else if(partidosSaved){
-                                Grupo.findByIdAndUpdate(grupoId , {$push:{partido: partidosSaved._id}}, {new: true}, (err, Push)=>{
+                                Torneo.findByIdAndUpdate(torneoId , {$push:{partido: partidosSaved._id}}, {new: true}, (err, Push)=>{
                                     if(err){
                                         return res.status(500).send({message: 'Error general'})
                                     }else if(Push){
@@ -268,18 +247,51 @@ function createPartido(req, res) {
 
 }
 
+
+function SetGoals(req, res) {
+    let torneoId = req.params.idT;
+    let partidoId = req.params.idP;
+    let update = req.body;
+
+    if(update.goalsTeamOne && update.goalsTeamTwo){
+        Partido.findById(partidoId,(err, teamFind) => {
+            if(err){
+                return res.status(500).send({message: 'Error general al buscar'});
+            }else if(teamFind){
+                Torneo.findOne({_id: torneoId, partido: partidoId}, (err, grupoFind) => {
+                    if(err){
+                        return res.status(500).send({message: 'Error general en la actualización'});
+                    }else if(grupoFind){
+                        Partido.findByIdAndUpdate(partidoId, update,{new:true}, (err, matchUpdate) => {
+                            if(err){
+                                return res.status(500).send({message: 'Error general en la actualización'});
+                            }else if(matchUpdate){
+                                return res.send({message: 'Actualizado ', matchUpdate});
+                            }else{
+                                return res.status(404).send({message: 'Contacto no actualizado'});
+                            }
+                        }) .populate('partido')
+                    }else{
+                        return res.status(404).send({message: 'torneo no Existente'})
+                    }
+                })
+            }else{
+                return res.status(404).send({message: 'torneo a actualizar inexistente'});
+            }
+        })
+
+    }else{
+        return res.status(404).send({message: 'Por favor ingresa los datos mínimos para actualizar'});
+    }
+}
+
+
 function finalizacionPartido(req, res) {
     
-    var grupoId = req.params.idG
-    var partidoId = req.params.idP
-    let params = req.body;
+    var torneoId = req.params.idT;
+    var partidoId = req.params.idP;
 
-    if(params.remove){
-        Partido.findOne({name: params.remove}, (err, remove) => {
-        if(err){
-            return res.status(500).send({message: 'Error general'});
-        }else if(remove){
-            Grupo.findOneAndUpdate({_id: grupoId, partidos: partidoId} , {$pull:{partidos: partidoId}}, {new:true}, (err, groupPull)=>{
+            Torneo.findOneAndUpdate({_id:torneoId, partido: partidoId} , {$pull:{partido: partidoId}}, {new:true}, (err, groupPull)=>{
                 if(err){
                     return res.status(500).send({message: 'Error general'});
                 }else if(groupPull){
@@ -296,19 +308,11 @@ function finalizacionPartido(req, res) {
                     return res.status(500).send({message: 'No se pudo eliminarla equipo del grupo'});
           }
     })
-         }else{
-            return res.status(403).send({message: 'El grupo ya fue eliminado o el nombre esta escrito de forma erronea'});
-         }
-        })
-       }else{
-        return res.status(403).send({message: 'Ingrese el nombre del equipo para poder eliminar'});
-       }
-    
     
 }
 
 function getPartidos(req, res){
-    Partido.find({}).populate('result').exec((err, match) => {
+    Partido.find({}).populate('partido').exec((err, match) => {
             if(err){
                     return res.status(500).send({message: 'Error general en el servidor'})
             }else if(match){
@@ -323,7 +327,7 @@ function getPartidos(req, res){
 
 
 module.exports = {
-    pruebaGroup,
+
     uploadImageTeam,
     getImageTeam,
     setTeam,
@@ -333,5 +337,6 @@ module.exports = {
     //partidos
     createPartido,
     finalizacionPartido ,
-    getPartidos 
+    getPartidos ,
+    SetGoals
 }

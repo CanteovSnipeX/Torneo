@@ -21,9 +21,6 @@ function setTorneo(req, res){
                 return res.status(500).send({message: 'Error general'})
             }else if(userFind){
                 torneo.name = params.name;
-                torneo.typetournamen = params.typetournamen;
-                torneo.awards = params.awards;
-
                 torneo.save((err, contactSaved)=>{
                     if(err){
                         return res.status(500).send({message: 'Error general al guardar'})
@@ -53,7 +50,7 @@ function createTorneo(req, res) {
     var torneo = new Torneo();
     var params = req.body;
 
-    if(params.name && params.typetournamen && params.awards ){
+    if(params.name  ){
         Torneo.findOne({name: params.name},(err,torneoFind)=>{
             if(err){
                 return res.status(500).send({message: 'Error general en el servidor'});
@@ -65,8 +62,6 @@ function createTorneo(req, res) {
                         return res.status(500).send({message: 'Error general'})
                     }else if(userFind){
                         torneo.name = params.name;
-                        torneo.typetournamen = params.typetournamen;
-                        torneo.awards = params.awards;
                         torneo.save((err, torneoSaved)=>{
                             if(err){
                                 return res.status(500).send({message: 'Error general al guardar'})
@@ -101,7 +96,7 @@ function updateTorneo(req, res) {
     let torneoId = req.params.idT;
     let update = req.body;
 
-    if(update.name && update.typetournamen && update.awards){
+    if(update.name){
         Torneo.findById(torneoId, (err, ligaFind)=>{
             if(err){
                 return res.status(500).send({message: 'Error general al buscar'});
@@ -118,7 +113,7 @@ function updateTorneo(req, res) {
                             }else{
                                 return res.status(404).send({message: 'Contacto no actualizado'});
                             }
-                        }).populate('liga')
+                        }).populate('team')
                     }else{
                         return res.status(404).send({message: 'Usuario no encontrado'})
                     }
@@ -164,7 +159,7 @@ function removeTorneo(req, res){
 
 
 function getTorneo(req, res) {
-    Torneo.find({}).populate('grupo').exec((err, torneo)=>{
+    Torneo.find({}).populate('team').exec((err, torneo)=>{
         if(err){
                 return res.status(500).send({message: 'Error general en el servidor'})
         }else if(torneo){

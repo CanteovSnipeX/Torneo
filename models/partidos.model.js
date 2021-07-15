@@ -1,15 +1,20 @@
 
 'use strict'
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
 
-var partidosSchema = Schema({
-  jornada:String,
-  name:String,
-  teamOne:String,
-  teamTwo:String,
-  result: [{type: Schema.ObjectId, ref:'result'}],
+const partidosSchema = new mongoose.Schema({
+  name: {
+    type: String,
+  },
+  teamOne:{
+    type: String,
+},
+goalsTeamOne:Number,
+  teamTwo:{
+    type: String,
+},
+goalsTeamTwo:Number
 });
 
 module.exports = mongoose.model('partido', partidosSchema);

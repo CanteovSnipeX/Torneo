@@ -18,8 +18,6 @@ function crearResult (req ,res) {
                     if(err){
                         return res.status(500).send({message: 'Error general'})
                     }else if(matchFind){
-                        result.teamOne = params.teamOne;
-                        result.teamTwo = params.teamTwo;
                         result.onegoles = params.onegoles;
                         result.twogoles = params.twogoles;
                         result.save((err, resultSaved)=>{
