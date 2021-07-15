@@ -13,7 +13,7 @@ api.post('/setTeam/:id',mdAuth.ensureAuth, teamController.setTeam);
 api.put('/:idG/updateTeam/:idt',mdAuth.ensureAuth,teamController.updateTeam);
 api.put('/:idG/removeTeam/:idt',mdAuth.ensureAuth,teamController.removeTeam);
 api.get('/getTeams',[mdAuth.ensureAuth, mdAuth.ensureAuthAdmin],teamController.getTeams);
-api.put('/:idG/uploadImageTeam/:idt', [upload],teamController.uploadImageTeam); 
+api.put('/:idt/uploadImageTeam/', [upload],teamController.uploadImageTeam); 
 api.get('/getImageTeam/:fileName', [upload],teamController.getImageTeam);
 
 //rutas  de partidios

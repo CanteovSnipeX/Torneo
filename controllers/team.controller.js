@@ -6,8 +6,7 @@ var fs = require('fs');
 var path = require('path');
 
 function uploadImageTeam(req, res){
-    var teamId = req.params.idt;
-    let grupoId = req.params.idG;
+    let teamId = req.params.idt;
     var update = req.body;
     var fileName;
 
@@ -25,10 +24,6 @@ function uploadImageTeam(req, res){
                 fileExt == 'jpeg' ||
                 fileExt == 'gif'){
 
-                    Grupo.findOne({_id: grupoId, team: teamId}, (err, gupoFind) => {
-                        if(err){
-                            return res.status(500).send({message: 'Error general en la actualización'});
-                        }else if(gupoFind){
                             Team.findByIdAndUpdate(teamId, {image:fileName},{new:true}, (err, teamUpdate) => {
                                 if(err){
                                     return res.status(500).send({message: 'Error general en la actualización'});
@@ -38,10 +33,6 @@ function uploadImageTeam(req, res){
                                     return res.status(404).send({message: 'Contacto no actualizado'});
                                 }
                             }) 
-                        }else{
-                            return res.status(404).send({message: 'grupo no Existente'})
-                        }
-                    })
                 }else{
                     fs.unlink(filePath, (err)=>{
                         if(err){

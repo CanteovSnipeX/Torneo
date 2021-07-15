@@ -151,8 +151,8 @@ function saveUserByAdmin(req, res) {
     if(userId != req.user.sub){
         res.status(401).send({message: 'No tienes permiso para crear usuarios en esta ruta'})
     }else{
-        if(params.name && params.username && params.email && params.password && params.role){
-            User.findOne({username: params.username}, (err, userFind)=>{
+        if(params.name){
+            User.findOne({name: params.name}, (err, userFind)=>{
                 if(err){
                     return res.status(500).send({message: 'Error general en el servidor'});
                 }else if(userFind){
@@ -169,11 +169,11 @@ function saveUserByAdmin(req, res) {
                             user.username = params.username.toLowerCase();
                             user.email = params.email.toLowerCase();
     
-                            user.save((err, userSaved)=>{
+                            user.save((err, userSavedAdmin)=>{
                                 if(err){
                                     return res.status(500).send({message: 'Error general al guardar'});
-                                }else if(userSaved){
-                                    return res.send({message: 'Usuario guardado', userSaved});
+                                }else if(userSavedAdmin){
+                                    return res.send({message: 'Usuario guardado', userSavedAdmin});
                                 }else{
                                     return res.status(500).send({message: 'No se guardó el usuario'});
                                 }
